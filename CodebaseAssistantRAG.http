@@ -1,0 +1,6 @@
+@CodebaseAssistantRAG_HostAddress = http://localhost:5128
+
+GET {{CodebaseAssistantRAG_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
