@@ -1,42 +1,50 @@
-Codebase Assistant RAG - Detailed Project Structure
-=================================================
+Codebase Assistant RAG - Full Folder Structure (for deletion)
+=============================================================
 
-Below is a deeper scan of the repository showing projects, folders and key files discovered in the workspace. Use this as the working map when adding new features.
+Below is a complete folder/file tree of the repository as discovered. Use it to locate and delete folders/files directly.
 
-Root
-----
+Root (repository root)
+-----------------------
+- .vs/
+- .git/
+- bin/
+- obj/
 - CodebaseAssistantRAG.slnx
 - CodebaseAssistant.Api.csproj
+- CodebaseAssistant.Infrastructure.csproj
+- CodebaseAssistant.Application.csproj
+- CodebaseAssistant.Domain.csproj
+- CodebaseAssistant.Shared.csproj
 - appsettings.json
 - CodebaseAssistantRAG.http
 - PROJECT_STATUS.md
 - GRAPH.MD
 
-CodebaseAssistant.Api/ (API project)
------------------------------------
+CodebaseAssistant.Api/
+----------------------
 - CodebaseAssistant.Api.csproj
 - Program.cs
+- LaunchSettings.json (if present)
 - Controllers/
-  - RepositoryController.cs  -> POST /api/repository/upload uses IRepositoryService
+  - RepositoryController.cs
+  - (other controllers if added)
 - Models/
   - Requests/
-	- UploadRepositoryRequest.cs  -> IFormFile model used by the controller
+	- UploadRepositoryRequest.cs
+  - Responses/
+	- UploadRepositoryResponse.cs
+  - (other models)
 
-Description: API layer that exposes endpoints. Currently contains the repository upload endpoint. Add ChatController, SearchController here later.
-
-CodebaseAssistant.Infrastructure/ (Infrastructure implementations)
-----------------------------------------------------------------
+CodebaseAssistant.Infrastructure/
+--------------------------------
 - CodebaseAssistant.Infrastructure.csproj
 - Services/
-  - RepositoryService.cs            -> Implements IRepositoryService: accepts ZIP, validates size/extension, extracts into Uploads/{id}/Source
-  - (Place to add) IndexingService.cs -> extract files, parse with Roslyn, create chunks
-  - (Place to add) EmbeddingService.cs -> call OpenAI/Azure embeddings
-  - (Place to add) VectorStore/ Qdrant client -> persist vectors and metadata
-  - (Place to add) SearchService.cs -> handle similarity search & retrieval
+  - RepositoryService.cs
+  - (indexing, embedding, search services may be added here)
 - Persistence/
-  - CodebaseAssistantDbContext.cs   -> EF DbContext with DbSet<Repository>
+  - CodebaseAssistantDbContext.cs
   - Configurations/
-	- RepositoryConfiguration.cs    -> Entity configuration for Repository
+	- RepositoryConfiguration.cs
   - Migrations/
 	- 20260626065205_InitialCreate.cs
 	- 20260626065205_InitialCreate.Designer.cs
@@ -44,73 +52,59 @@ CodebaseAssistant.Infrastructure/ (Infrastructure implementations)
 	- 20260706094219_AddRepositoryUploadFields.Designer.cs
 	- CodebaseAssistantDbContextModelSnapshot.cs
 - DependencyInjection/
-  - DependencyInjection.cs          -> service registrations (AddInfrastructure)
+  - DependencyInjection.cs
 - Configuration/
-  - UploadSettings.cs               -> settings related to uploading (max size, allowed extensions)
+  - UploadSettings.cs
 
-Description: Infrastructure houses implementations, EF persistence and configuration. Recommended place to add Qdrant client and embedding service.
-
-CodebaseAssistant.Application/ (Application layer)
------------------------------------------------
+CodebaseAssistant.Application/
+------------------------------
 - CodebaseAssistant.Application.csproj
 - Interfaces/
-  - IRepositoryService.cs           -> interface for upload service
+  - IRepositoryService.cs
+  - (other interfaces)
 - DTOs/
   - Repository/
-	- UploadRepositoryRequest.cs    -> placeholder (internal) in Application layer (API uses the Api project model)
-	- UploadRepositoryResponse.cs   -> used for API responses (exists)
+	- UploadRepositoryRequest.cs
+	- UploadRepositoryResponse.cs
 
-Description: Define application-level interfaces, DTOs, use-cases. Add interfaces for IIndexingService, IEmbeddingService, ISearchService, IChatService here.
-
-CodebaseAssistant.Domain/ (Domain models)
------------------------------------------
+CodebaseAssistant.Domain/
+-------------------------
 - CodebaseAssistant.Domain.csproj
 - Common/
   - BaseEntity.cs
 - Entities/
-  - Repository.cs                    -> domain model tracked in DB
-  - (Place to add) CodeChunk.cs      -> entity to persist chunk metadata (id, file, class, method, startLine, endLine, contentHash, repositoryId)
+  - Repository.cs
+  - (CodeChunk.cs may be added)
 - Enums/
-  - RepositoryStatus.cs              -> enum for repository status
-
-Description: Domain models and enums. Add CodeChunk and Embedding entity here for persistence.
+  - RepositoryStatus.cs
 
 CodebaseAssistant.Shared/
 -------------------------
 - CodebaseAssistant.Shared.csproj
 - Class1.cs
 
-Description: Shared utilities, helpers, common constants.
+Other common folders
+--------------------
+- Uploads/                -> runtime uploaded repository contents (created at runtime)
+- scripts/                -> utility scripts if present
 
-Build artifacts / IDE files
---------------------------
-- bin/ obj/                         -> build outputs
-- .vs/                              -> Visual Studio workspace data
+Build artifacts you can safely remove (if you want to free space)
+----------------------------------------------------------------
+- bin/ (project-level bin folders)
+- obj/ (project-level obj folders)
+- .vs/ (Visual Studio user data)
 
-Missing / Next recommended additions (where to add them)
--------------------------------------------------------
-- IndexingService (Infrastructure/Services): use Roslyn to parse C# files and extract chunks with metadata (file, namespace, class, method, line ranges).
-- CodeChunk entity (Domain/Entities) + EF configuration (Infrastructure/Persistence/Configurations): store chunk metadata and optionally vector id.
-- EmbeddingService (Infrastructure/Services): call OpenAI/Azure embeddings for each chunk.
-- VectorStore (Infrastructure/Services/VectorStore): Qdrant client integration to persist vectors and metadata.
-- SearchService and ChatService (Infrastructure/Services) and corresponding controllers (Api/Controllers): implement semantic search and chat endpoints.
-- Add configuration entries in appsettings.json for OpenAI/Azure keys, Qdrant connection, indexing options.
-- Add JWT authentication and Serilog configuration in Program.cs and Infrastructure/DependencyInjection.
+How to delete a folder quickly (PowerShell)
+-------------------------------------------
+Example: to remove the Uploads folder from the repo root
 
-Quick mapping of FRs -> suggested files to create
-------------------------------------------------
-- FR-2 / FR-3 (Parsing & Chunking): Infrastructure/Services/IndexingService.cs, Domain/Entities/CodeChunk.cs
-- FR-4 (Embeddings): Infrastructure/Services/EmbeddingService.cs
-- FR-5 (Vector DB): Infrastructure/Services/VectorStore/QdrantClient.cs
-- FR-6 / FR-7 (Search / Retrieval): Infrastructure/Services/SearchService.cs, Api/Controllers/SearchController.cs
-- FR-8 (Chat): Infrastructure/Services/ChatService.cs, Api/Controllers/ChatController.cs
+Remove-Item -Recurse -Force .\Uploads
 
-How I can proceed now
----------------------
-Choose one of the following and I will implement a scaffold or initial implementation:
-- "indexing"  -> add CodeChunk entity, IndexingService scaffold, and POST /api/repository/index endpoint
-- "embeddings" -> scaffold EmbeddingService and settings
-- "qdrant" -> scaffold Qdrant client with DTOs
-- "search" -> scaffold SearchService and SearchController
-- "chat" -> scaffold ChatService and ChatController
+To delete a project folder (example: CodebaseAssistant.Infrastructure) from disk
+
+Remove-Item -Recurse -Force .\CodebaseAssistant.Infrastructure
+
+Be careful: these commands permanently delete files from disk. Make a backup or commit changes before deleting.
+
+If you want, tell me which top-level folders you want removed and I can create a PowerShell script or run commands for you to execute locally.
 
