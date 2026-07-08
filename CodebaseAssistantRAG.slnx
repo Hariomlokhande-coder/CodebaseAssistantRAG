@@ -2,9 +2,9 @@
   <Folder Name="/Solution Items/">
     <File Path="Directory.Build.props" />
   </Folder>
-  <Project Path="../CodebaseAssistant.Application/CodebaseAssistant.Application.csproj" />
-  <Project Path="../CodebaseAssistant.Domain/CodebaseAssistant.Domain.csproj" />
-  <Project Path="../CodebaseAssistant.Infrastructure/CodebaseAssistant.Infrastructure.csproj" />
-  <Project Path="../CodebaseAssistant.Shared/CodebaseAssistant.Shared.csproj" />
   <Project Path="CodebaseAssistant.Api.csproj" />
+  <Project Path="CodebaseAssistant.Application/CodebaseAssistant.Application.csproj" />
+  <Project Path="CodebaseAssistant.Domain/CodebaseAssistant.Domain.csproj" />
+  <Project Path="CodebaseAssistant.Infrastructure/CodebaseAssistant.Infrastructure.csproj" />
+  <Project Path="CodebaseAssistant.Shared/CodebaseAssistant.Shared.csproj" />
 </Solution>

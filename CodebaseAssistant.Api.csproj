@@ -1,9 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <!--
+    The API project file is located at the repository root. By default the SDK includes
+    all source files under the project directory (recursive). That unintentionally
+    pulled in generated files from sibling projects (obj/**/.AssemblyAttributes.cs)
+    and caused duplicate assembly attribute compilation errors.
+
+    Exclude sibling project folders and build artifacts from default item globbing.
+  -->
+  <PropertyGroup>
+    <DefaultItemExcludes>**/bin/**;**/obj/**;CodebaseAssistant.Application/**;CodebaseAssistant.Domain/**;CodebaseAssistant.Infrastructure/**;CodebaseAssistant.Shared/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,8 +29,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CodebaseAssistant.Application\CodebaseAssistant.Application.csproj" />
-    <ProjectReference Include="..\CodebaseAssistant.Infrastructure\CodebaseAssistant.Infrastructure.csproj" />
+    <ProjectReference Include="CodebaseAssistant.Application\CodebaseAssistant.Application.csproj" />
+    <ProjectReference Include="CodebaseAssistant.Infrastructure\CodebaseAssistant.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>

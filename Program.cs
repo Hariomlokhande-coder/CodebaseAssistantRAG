@@ -1,6 +1,8 @@
 using CodebaseAssistant.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using CodebaseAssistant.Infrastructure.DependencyInjection;
+using CodebaseAssistant.Infrastructure.Configuration;
+using CodebaseAssistant.Infrastructure.Services;
+using CodebaseAssistant.Application.Interfaces;
 var builder = WebApplication.CreateBuilder(args);
 //using CodebaseAssistant.Infrastructure.DependencyInjection;
 // Add services to the container.
@@ -15,7 +17,11 @@ builder.Services.AddDbContext<CodebaseAssistantDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
-builder.Services.AddInfrastructure(builder.Configuration);
+// Inline infrastructure registrations to avoid ambiguity between compiled refs
+builder.Services.Configure<UploadSettings>(
+    builder.Configuration.GetSection("UploadSettings"));
+
+builder.Services.AddScoped<IRepositoryService, RepositoryService>();
 
 var app = builder.Build();
 
