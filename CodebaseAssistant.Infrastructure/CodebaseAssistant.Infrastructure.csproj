@@ -19,12 +19,12 @@
     <Folder Include="Embedding\" />
     <Folder Include="Logging\" />
     <Folder Include="VectorDatabase\" />
-    <Folder Include="Roslyn\" />
     <Folder Include="RepositoryScanner\" />
     <Folder Include="PromptBuilder\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.6.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.17">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

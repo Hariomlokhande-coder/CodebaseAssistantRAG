@@ -1,11 +1,6 @@
 ﻿using CodebaseAssistant.Api.Models.Requests;
 using CodebaseAssistant.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore.Query.Internal;
-using CodebaseAssistant.Api.Models.Requests;
-//using CodebaseAssistant.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-
 namespace CodebaseAssistant.Api.Controllers;
 
 [ApiController]

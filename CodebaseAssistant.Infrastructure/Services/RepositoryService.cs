@@ -1,14 +1,28 @@
 ﻿using CodebaseAssistant.Application.Interfaces;
+using CodebaseAssistant.Infrastructure.Persistence;
+using CodebaseAssistant.Infrastructure.Roslyn;
 using Microsoft.AspNetCore.Http;
 using System.IO.Compression;
+using System.Security.Cryptography;
+using System.Text;
 using CodebaseAssistant.Domain.Entities;
 using CodebaseAssistant.Domain.Enums;
-using CodebaseAssistant.Infrastructure.Persistence;
 
 namespace CodebaseAssistant.Infrastructure.Services;
 
 public class RepositoryService : IRepositoryService
 {
+    private readonly CodebaseAssistantDbContext _dbContext;
+    private readonly ICodeParser _codeParser;
+
+    public RepositoryService(
+        CodebaseAssistantDbContext dbContext,
+        ICodeParser codeParser)
+    {
+        _dbContext = dbContext;
+        _codeParser = codeParser;
+    }
+
     public async Task<Guid> UploadRepositoryAsync(IFormFile file)
     {
         if (file == null || file.Length == 0)
@@ -60,13 +74,42 @@ public class RepositoryService : IRepositoryService
             ZipFile.ExtractToDirectory(
                 zipPath,
                 extractPath);
+
+            // Compute hash of the zip file
+            string hash;
+            using (var sha = SHA256.Create())
+            using (var fs = File.OpenRead(zipPath))
+            {
+                var bytes = sha.ComputeHash(fs);
+                hash = BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            }
+
+            var repoName = Path.GetFileNameWithoutExtension(file.FileName);
+
+            var fileInfo = new FileInfo(zipPath);
+
+            var repository = new Repository
+            {
+                Id = repositoryId,
+                Name = repoName ?? repositoryId.ToString(),
+                Path = Path.GetFullPath(Path.Combine(repositoryFolder, "Source")),
+                Hash = hash,
+                CreatedAt = DateTime.UtcNow,
+                UploadedAt = DateTime.UtcNow,
+                Status = RepositoryStatus.Uploaded,
+                SizeInBytes = fileInfo.Length,
+                Description = null
+            };
+
+            _dbContext.Repositories.Add(repository);
+            await _dbContext.SaveChangesAsync();
+
+            return repositoryId;
         }
         catch (InvalidDataException)
         {
             throw new ArgumentException(
                 "Corrupted ZIP file.");
         }
-
-        return repositoryId;
     }
 }
