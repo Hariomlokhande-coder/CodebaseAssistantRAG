@@ -16,7 +16,6 @@
   <ItemGroup>
     <Folder Include="AI\" />
     <Folder Include="Chunking\" />
-    <Folder Include="Embedding\" />
     <Folder Include="Logging\" />
     <Folder Include="VectorDatabase\" />
     <Folder Include="RepositoryScanner\" />

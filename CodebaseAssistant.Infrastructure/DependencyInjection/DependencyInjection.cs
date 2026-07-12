@@ -1,5 +1,6 @@
 ﻿using CodebaseAssistant.Application.Interfaces;
 using CodebaseAssistant.Infrastructure.Configuration;
+using CodebaseAssistant.Infrastructure.Embedding;
 using CodebaseAssistant.Infrastructure.Roslyn;
 using CodebaseAssistant.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
@@ -16,11 +17,20 @@ public static class DependencyInjection
         services.Configure<UploadSettings>(
             configuration.GetSection("UploadSettings"));
 
-        services.AddScoped<IRepositoryService, RepositoryService>();
+        services.Configure<OpenAiOptions>(
+            configuration.GetSection("OpenAI"));
 
-        services.AddScoped<ICodeParser, CSharpCodeParser>();
+        services.AddHttpClient<IEmbeddingService,
+            OpenAiEmbeddingService>();
 
-        services.AddScoped<IIndexingService, IndexingService>();
+        services.AddScoped<IRepositoryService,
+            RepositoryService>();
+
+        services.AddScoped<ICodeParser,
+            CSharpCodeParser>();
+
+        services.AddScoped<IIndexingService,
+            IndexingService>();
 
         return services;
     }
