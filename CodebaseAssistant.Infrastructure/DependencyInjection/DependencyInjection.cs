@@ -14,11 +14,14 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure<UploadSettings>(
+        services.Configure(
             configuration.GetSection("UploadSettings"));
 
         services.Configure<OpenAiOptions>(
             configuration.GetSection("OpenAI"));
+
+        services.Configure<QdrantOptions>(
+            configuration.GetSection("Qdrant"));
 
         services.AddHttpClient<IEmbeddingService,
             OpenAiEmbeddingService>();
