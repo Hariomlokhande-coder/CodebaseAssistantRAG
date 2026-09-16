@@ -1,6 +1,5 @@
 Codebase Assistant using RAG (Retrieval-Augmented Generation)
 ===========================================================
-
 Overview
 --------
 This solution implements a .NET 8-based backend for a Codebase Assistant that will index source code, create embeddings, store vectors in a vector DB, and answer developer queries using a LLM (RAG pipeline). The current repository includes repository upload and basic DB tracking. Remaining RAG components are scaffolded in PROJECT_STATUS.md and GRAPH.MD.
