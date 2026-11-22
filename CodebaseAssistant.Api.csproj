@@ -16,7 +16,7 @@
     Exclude sibling project folders and build artifacts from default item globbing.
   -->
   <PropertyGroup>
-    <DefaultItemExcludes>**/bin/**;**/obj/**;CodebaseAssistant.Application/**;CodebaseAssistant.Domain/**;CodebaseAssistant.Infrastructure/**;CodebaseAssistant.Shared/**</DefaultItemExcludes>
+    <DefaultItemExcludes>**/bin/**;**/obj/**;CodebaseAssistant.Application/**;CodebaseAssistant.Domain/**;CodebaseAssistant.Infrastructure/**;CodebaseAssistant.Shared/**;frontend/**</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
