@@ -1,0 +1,58 @@
+<div class="shell">
+  <header>
+    <a class="brand" href="/" aria-label="Codebase home"><span class="brand-mark">C</span><span>Codebase</span></a>
+    <div class="repo-pill"><span></span>{{ shortId() }}</div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <p class="eyebrow">Repository workspace</p>
+      <h1>Understand the code<br>without losing context.</h1>
+      <p class="lede">Upload a repository, index it once, then search the implementation or ask focused questions.</p>
+    </section>
+
+    <section class="setup card">
+      <div class="section-title"><span>01</span><div><h2>Connect repository</h2><p>ZIP archives up to the configured server limit.</p></div></div>
+      <div class="upload-row">
+        <label class="file-control">
+          <input type="file" accept=".zip,application/zip" (change)="selectFile($event)">
+          <span>{{ selectedFile?.name || 'Choose repository.zip' }}</span><b>Browse</b>
+        </label>
+        <button class="button dark" (click)="upload()" [disabled]="busy() !== ''">{{ busy() === 'upload' ? 'Uploading…' : 'Upload' }}</button>
+      </div>
+      <div class="divider"><span>or use an existing repository</span></div>
+      <div class="id-row">
+        <input [(ngModel)]="repositoryId" placeholder="Repository ID">
+        <button class="button line" (click)="index()" [disabled]="busy() !== '' || !repositoryId">{{ busy() === 'index' ? 'Indexing…' : 'Index repository' }}</button>
+      </div>
+      <p class="status">{{ message() }}</p>
+    </section>
+
+    <section class="workspace-grid">
+      <article class="card ask-card">
+        <div class="section-title compact"><span>02</span><div><h2>Ask the codebase</h2><p>Answers stay grounded in indexed files.</p></div></div>
+        <textarea [(ngModel)]="question" placeholder="How does repository indexing work?" (keydown.control.enter)="ask()"></textarea>
+        <div class="action-row"><small>Ctrl + Enter</small><button class="button accent" (click)="ask()" [disabled]="busy() !== '' || !question.trim()">{{ busy() === 'ask' ? 'Working…' : 'Ask question' }}</button></div>
+        @if (answer()) {
+          <div class="answer"><p class="answer-label">Answer</p><p>{{ answer() }}</p>
+            @if (sources().length) {
+              <div class="sources">@for (source of sources(); track source.filePath + source.startLine) { <div><code>{{ source.filePath }}</code><span>L{{ source.startLine }}–{{ source.endLine }}</span></div> }</div>
+            }
+          </div>
+        }
+      </article>
+
+      <article class="card search-card">
+        <div class="section-title compact"><span>03</span><div><h2>Search implementation</h2><p>Find the most relevant code chunks.</p></div></div>
+        <div class="search-box"><input [(ngModel)]="searchQuery" placeholder="Search auth middleware…" (keydown.enter)="search()"><button (click)="search()" [disabled]="busy() !== '' || !searchQuery.trim()" aria-label="Search">⌕</button></div>
+        <div class="result-list">
+          @if (!results().length) { <div class="empty"><span>&lt;/&gt;</span><p>Relevant files will appear here.</p></div> }
+          @for (result of results(); track result.chunkId) {
+            <details><summary><code>{{ result.filePath }}</code><span>{{ (result.score * 100).toFixed(0) }}%</span></summary><pre>{{ result.content }}</pre></details>
+          }
+        </div>
+      </article>
+    </section>
+  </main>
+  <footer><span>Codebase Assistant</span><span>Built for focused repository work.</span></footer>
+</div>
