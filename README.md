@@ -43,6 +43,21 @@ Main workflow:
 - `POST /api/search` — retrieve matching chunks.
 - `POST /api/chat/query` — answer a question using retrieved chunks and return citations.
 
+Frontend screenshots
+--------------------
+
+### Repository workspace
+
+![Desktop workspace with the ZIP upload and repository ID controls](docs/screenshots/desktop-workspace.png)
+
+### Code search and Q&A
+
+![Ask the codebase and Search implementation panels side by side](docs/screenshots/search-and-chat.png)
+
+### Narrow-screen layout
+
+![Repository connection form stacked vertically on a narrow screen](docs/screenshots/mobile-repository.png)
+
 Files to review
 ---------------
 - PROJECT_STATUS.md  -> project status and roadmap
