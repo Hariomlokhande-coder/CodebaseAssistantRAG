@@ -48,7 +48,7 @@ public class RepositoryController : ControllerBase
 
         return Ok(new
         {
-            Message = "Repository indexing started.",
+            Message = "Repository indexed successfully.",
             RepositoryId = repositoryId
         });
     }

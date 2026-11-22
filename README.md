@@ -2,7 +2,7 @@ Codebase Assistant using RAG (Retrieval-Augmented Generation)
 ===========================================================
 Overview
 --------
-This solution implements a .NET 8-based backend for a Codebase Assistant that will index source code, create embeddings, store vectors in a vector DB, and answer developer queries using a LLM (RAG pipeline). The current repository includes repository upload and basic DB tracking. Remaining RAG components are scaffolded in PROJECT_STATUS.md and GRAPH.MD.
+This solution implements a .NET 8 backend for a Codebase Assistant. It uploads ZIP repositories, parses and chunks source code, creates OpenAI embeddings, stores vectors in Qdrant, performs repository-scoped semantic search, and answers questions with source citations.
 
 Key projects
 ------------
@@ -17,6 +17,10 @@ Getting started (local)
 Prerequisites:
 - .NET 8 SDK
 - SQL Server (localdb is used by default connection string)
+- Qdrant (gRPC endpoint, normally `http://localhost:6334`)
+- An OpenAI API key
+
+Configure `OpenAI:ApiKey` and `Qdrant:BaseUrl` using environment variables or .NET user-secrets. Do not commit real keys.
 
 Run API:
 
@@ -24,21 +28,25 @@ Run API:
    dotnet build
    dotnet run --project CodebaseAssistant.Api
 
-2. API will run at the configured address (see CodebaseAssistantRAG.http for an example request file).
+2. Apply the database migrations with `dotnet ef database update --project CodebaseAssistant.Infrastructure --startup-project CodebaseAssistant.Api.csproj`.
+3. API will run at the configured address and Swagger is available in Development.
 
 Upload repository (sample):
 
 - POST /api/repository/upload
 - Form-data: file -> repository.zip
 
+Main workflow:
+
+- `POST /api/repository/upload` — upload a ZIP.
+- `POST /api/repository/index/{repositoryId}` — parse, embed, and index it.
+- `POST /api/search` — retrieve matching chunks.
+- `POST /api/chat/query` — answer a question using retrieved chunks and return citations.
+
 Files to review
 ---------------
 - PROJECT_STATUS.md  -> project status and roadmap
 - GRAPH.MD           -> project structure and discovered files
-
-Next development tasks
-----------------------
-Pick a next area to implement (I can scaffold or implement): indexing, embeddings, qdrant, search, chat.
 
 Security & config
 -----------------

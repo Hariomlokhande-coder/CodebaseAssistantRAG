@@ -14,7 +14,7 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.Configure(
+        services.Configure<UploadSettings>(
             configuration.GetSection("UploadSettings"));
 
         services.Configure<OpenAiOptions>(
@@ -23,8 +23,14 @@ public static class DependencyInjection
         services.Configure<QdrantOptions>(
             configuration.GetSection("Qdrant"));
 
+        services.Configure<ChatOptions>(
+            configuration.GetSection("Chat"));
+
         services.AddHttpClient<IEmbeddingService,
             OpenAiEmbeddingService>();
+
+        // Qdrant vector store
+        services.AddScoped<IVectorStore, VectorDatabase.QdrantVectorStore>();
 
         services.AddScoped<IRepositoryService,
             RepositoryService>();
@@ -34,6 +40,8 @@ public static class DependencyInjection
 
         services.AddScoped<IIndexingService,
             IndexingService>();
+
+        services.AddHttpClient<IChatService, ChatService>();
 
         return services;
     }

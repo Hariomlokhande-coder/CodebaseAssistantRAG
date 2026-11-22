@@ -1,47 +1,64 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace CodebaseAssistant.Infrastructure.Roslyn;
 
-public class CSharpCodeParser : ICodeParser
+public sealed class CSharpCodeParser : ICodeParser
 {
     public async Task<List<ParsedCodeItem>> ParseAsync(string filePath)
     {
-        var result = new List<ParsedCodeItem>();
+        var tree = CSharpSyntaxTree.ParseText(await File.ReadAllTextAsync(filePath));
+        var root = await tree.GetRootAsync();
+        var items = new List<ParsedCodeItem>();
 
-        var code = await File.ReadAllTextAsync(filePath);
-
-        var syntaxTree = CSharpSyntaxTree.ParseText(code);
-
-        var root = await syntaxTree.GetRootAsync();
-
-        var namespaceNode = root.DescendantNodes()
-                                .OfType<NamespaceDeclarationSyntax>()
-                                .FirstOrDefault();
-
-        var namespaceName = namespaceNode?.Name.ToString() ?? string.Empty;
-
-        var classes = root.DescendantNodes()
-                          .OfType<ClassDeclarationSyntax>();
-
-        foreach (var classNode in classes)
+        foreach (var type in root.DescendantNodes().OfType<TypeDeclarationSyntax>())
         {
-            var methods = classNode.Members
-                                   .OfType<MethodDeclarationSyntax>();
+            var namespaceName = type.Ancestors().OfType<BaseNamespaceDeclarationSyntax>()
+                .FirstOrDefault()?.Name.ToString() ?? string.Empty;
 
-            foreach (var method in methods)
+            Add(items, filePath, namespaceName, type.Identifier.Text, string.Empty, "Type", type);
+
+            foreach (var member in type.Members)
             {
-                result.Add(new ParsedCodeItem
+                switch (member)
                 {
-                    FilePath = filePath,
-                    Namespace = namespaceName,
-                    ClassName = classNode.Identifier.Text,
-                    MethodName = method.Identifier.Text,
-                    Code = method.ToString()
-                });
+                    case MethodDeclarationSyntax method:
+                        Add(items, filePath, namespaceName, type.Identifier.Text, method.Identifier.Text, "Method", method);
+                        break;
+                    case ConstructorDeclarationSyntax constructor:
+                        Add(items, filePath, namespaceName, type.Identifier.Text, constructor.Identifier.Text, "Constructor", constructor);
+                        break;
+                    case PropertyDeclarationSyntax property:
+                        Add(items, filePath, namespaceName, type.Identifier.Text, property.Identifier.Text, "Property", property);
+                        break;
+                }
             }
         }
 
-        return result;
+        return items;
+    }
+
+    private static void Add(
+        ICollection<ParsedCodeItem> items,
+        string filePath,
+        string namespaceName,
+        string className,
+        string methodName,
+        string memberType,
+        SyntaxNode node)
+    {
+        var lines = node.GetLocation().GetLineSpan();
+        items.Add(new ParsedCodeItem
+        {
+            FilePath = filePath,
+            Namespace = namespaceName,
+            ClassName = className,
+            MethodName = methodName,
+            MemberType = memberType,
+            Code = node.ToFullString(),
+            StartLine = lines.StartLinePosition.Line + 1,
+            EndLine = lines.EndLinePosition.Line + 1
+        });
     }
 }

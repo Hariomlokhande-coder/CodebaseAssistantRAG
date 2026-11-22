@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace CodebaseAssistant.Infrastructure.Configuration;
 
-namespace CodebaseAssistant.Infrastructure.Configuration
+public sealed class UploadSettings
 {
-    public class UploadSettings
-    {
-        public string? RepositoryPath { get; set; }
-        public int MaxFileSizeMb { get; set; }
-    }
+    public string? RepositoryPath { get; set; }
+    public int MaxFileSizeMb { get; set; } = 100;
 }

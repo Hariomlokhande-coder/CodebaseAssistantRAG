@@ -26,12 +26,26 @@ public sealed class QdrantVectorStore : IVectorStore
 
         var uri = new Uri(qdrantOptions.BaseUrl);
 
-        _client = string.IsNullOrWhiteSpace(qdrantOptions.ApiKey)
-            ? new QdrantClient(uri.Host, uri.Port)
-            : new QdrantClient(
-                uri.Host,
-                uri.Port,
-                qdrantOptions.ApiKey);
+        //_client = string.IsNullOrWhiteSpace(qdrantOptions.ApiKey)
+        //    ? new QdrantClient(uri.Host, uri.Port)
+        //    : new QdrantClient(
+        //        uri.Host,
+        //        uri.Port,
+        //        qdrantOptions.ApiKey);
+
+        var channel = QdrantChannel.ForAddress(
+    qdrantOptions.BaseUrl,
+    new ClientConfiguration
+    {
+        ApiKey = string.IsNullOrWhiteSpace(qdrantOptions.ApiKey)
+            ? null
+            : qdrantOptions.ApiKey
+    });
+
+        var grpcClient = new QdrantGrpcClient(channel);
+
+        _client = new QdrantClient(grpcClient);
+
     }
 
     public async Task CreateCollectionAsync(
@@ -100,10 +114,7 @@ public sealed class QdrantVectorStore : IVectorStore
             },
             Vectors = new Vectors
             {
-                Vector = new Vector
-                {
-                    Data = { vector }
-                }
+                Vector = vector
             }
         };
 

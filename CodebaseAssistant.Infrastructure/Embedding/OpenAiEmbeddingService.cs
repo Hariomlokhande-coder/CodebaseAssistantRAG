@@ -28,6 +28,9 @@ public class OpenAiEmbeddingService : IEmbeddingService
                 "Text cannot be empty.",
                 nameof(text));
 
+        if (string.IsNullOrWhiteSpace(_options.ApiKey))
+            throw new InvalidOperationException("OpenAI:ApiKey is not configured.");
+
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue(
                 "Bearer",
